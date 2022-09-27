@@ -1,31 +1,42 @@
-import { getDownloadURL, ref } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { storage } from "../firebase";
+import { db, storage } from "../firebase";
 
 function Add() {
   //file
   const [file, setFile] = useState<File[]>([]);
   // url for displaying the image
   const [imageUrl, setImageUrl] = useState<any[]>([]);
+  // tags
+  const [tags, setTags] = useState<string[]>([]);
   // function to run when adding the file
   const handlefilechange = (e: any) => {
     setFile(e.target.files);
   };
-  // change in the image url when the file is changed
+  // change in the image url when the file variable is changed
   useEffect(() => {
     setImageUrl([]);
     for (let index = 0; index < file.length; index++) {
       setImageUrl((e) => [...e, URL.createObjectURL(file[index])]);
     }
   }, [file]);
+  const handleTagInput = () => {};
   // when upload
   const handlesubmit = (e: any) => {
-    console.log("published");
     e.preventDefault();
     // mandar datos a storage
     for (let index = 0; index < file.length; index++) {
       console.log(file[index].name);
-      ref(storage, `/images/${file[index].name}.png`);
+      let fileUploaded = ref(storage, `/images/${file[index].name}`);
+      uploadBytesResumable(fileUploaded, file[index]);
+      getDownloadURL(fileUploaded).then((e) => {
+        addDoc(collection(db, "images"), {
+          key: Math.random(),
+          url: e,
+          tags: ["hello"],
+        });
+      });
     }
   };
   return (
@@ -56,6 +67,8 @@ function Add() {
           type="text"
           multiple
           className="border-solid border-2 border-pink-300 rounded-md"
+          placeholder="e.g. pau , hitec , capi"
+          onChange={handleTagInput}
         />
         <button type="submit">Publish</button>
       </form>
