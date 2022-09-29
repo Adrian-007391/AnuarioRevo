@@ -10,11 +10,12 @@ function ImageArea() {
     });
   };
   useEffect(() => {
+    setimages([]);
     getfiles();
   }, []);
 
   return (
-    <div className="mt-5 flex justify-evenly flex-wrap">
+    <div className="mt-5 flex justify-evenly flex-wrap space-y-5">
       {images.map((e) => (
         <img
           onClick={() => window.open(e.url)}
