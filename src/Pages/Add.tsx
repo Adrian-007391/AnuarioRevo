@@ -21,23 +21,27 @@ function Add() {
       setImageUrl((e) => [...e, URL.createObjectURL(file[index])]);
     }
   }, [file]);
-  const handleTagInput = () => {};
+  const handleTagInput = (e: any) => {
+    setTags(e.target.value.split(","));
+    console.log(e.target.value.split(","));
+  };
   // when upload
   const handlesubmit = (e: any) => {
     e.preventDefault();
     // mandar datos a storage
     for (let index = 0; index < file.length; index++) {
-      console.log(file[index].name);
       let fileUploaded = ref(storage, `/images/${file[index].name}`);
       uploadBytesResumable(fileUploaded, file[index]);
       getDownloadURL(fileUploaded).then((e) => {
         addDoc(collection(db, "images"), {
           key: Math.random(),
           url: e,
-          tags: ["hello"],
+          tags: tags,
         });
       });
     }
+    setFile([]);
+    setTags([]);
   };
   return (
     <div className="w-screen flex flex-col  items-center p-10 justify-center">
@@ -58,6 +62,7 @@ function Add() {
       >
         <input
           type="file"
+          value={file}
           multiple
           className=""
           onChange={(e) => handlefilechange(e)}
@@ -68,7 +73,7 @@ function Add() {
           multiple
           className="border-solid border-2 border-pink-300 rounded-md"
           placeholder="e.g. pau , hitec , capi"
-          onChange={handleTagInput}
+          onChange={(e) => handleTagInput(e)}
         />
         <button type="submit">Publish</button>
       </form>

@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Main from "./Pages/Main";
 import Add from "./Pages/Add";
+import Main from "./Pages/Main";
 function App() {
   return (
     <div>
